@@ -1,7 +1,10 @@
-// components/Signup.jsx
 import React, { useState } from "react";
 import { auth } from "../firebase/config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 
 function Signup({ setShowLogin }) {
   const [user, setUser] = useState({ email: "", password: "" });
@@ -16,7 +19,15 @@ function Signup({ setShowLogin }) {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, user.email, user.password);
-      // Firebase automatically logs in user after signup
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function handleGoogleSignup() {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
     } catch (err) {
       setError(err.message);
     }
@@ -50,9 +61,20 @@ function Signup({ setShowLogin }) {
         <button type="submit" className="btn btn-primary">
           Signup
         </button>
+        <button
+          type="button"
+          className="btn btn-danger mt-3"
+          onClick={handleGoogleSignup}
+        >
+          Sign up with Google
+        </button>
         <p className="mt-3">
           Already have an account?{" "}
-          <button type="button" className="btn btn-link p-0" onClick={() => setShowLogin(true)}>
+          <button
+            type="button"
+            className="btn btn-link p-0"
+            onClick={() => setShowLogin(true)}
+          >
             Login here
           </button>
         </p>
